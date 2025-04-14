@@ -135,3 +135,4 @@ class ArrayOrderedPositionalList:
     old_value = self.delete(p)          # temporarily store old element
     self.add(e)                         # add new element
     return old_value                    # return the old element value
+  

@@ -9,7 +9,7 @@ def read_orders(path="pedidos.txt"):
             print(f"Por hacer: procesar pedido {model_name} del cliente {customer}")
             
             
-def read_parts(path="piezas.txt"):
+def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inventario 
     inventario = AOP()
 
     with open(path) as f:
@@ -37,32 +37,35 @@ def read_models(path="modelos.txt") :
     --------
         dict : {model : (part, int number of parts)}
     """
-    models = {}
+    catalogo = {}
     with open(path) as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
-            models[model_name] = (part_name, qty)
+            piezas = (part_name, qty)
+            
+            if model_name not in catalogo.keys(): #Si el modelo aun no se ha registrado crea una LOP sobre la que añadir tuplas en vez de reescribirlas
+                catalogo[model_name] = LOP()
+                
+            catalogo[model_name].add(piezas)
             print(f"Por hacer: añadir al catálogo pieza \"{part_name}\" ({qty} unidades) al modelo \"{model_name}\"")
-    return models
-
+    return catalogo
 
 
 
 if __name__ == "__main__":
-    read_parts()
-    models = read_models() 
     read_orders()
-    print(models) # printea el diccionario de automóviles
-    inventario = read_parts()
+    
+    inventario = read_parts() #array de partes disponibles
+    catalogo = read_models() # diccionario de automóviles disponibles
 
-    print("\n -----STOCK----")
+    print("\n -----STOCK----")  #Imprimir el stock
     for elementos in inventario:
         print(*elementos)
-
+    print()
     
-    
-
-    
-
-
+    print("\n -----CATÁLOGO----")    #Imprimir el catálogo
+    for modelo, lista in catalogo.items():
+        print("Modelo : ", modelo)
+        frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
+        print(f"{frase} \n" )
