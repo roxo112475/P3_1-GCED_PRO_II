@@ -1,5 +1,5 @@
-from linked_ordered_positional_list import LinkedOrderedPositionalList as ListaOrdenada
-from array_ordered_positional_list import ArrayOrderedPositionalList as ListaOrdenada
+from linked_ordered_positional_list import LinkedOrderedPositionalList as LOP
+from array_ordered_positional_list import ArrayOrderedPositionalList as ArrayLOP
 
 def read_orders(path="pedidos.txt"):
     with open(path) as f:
@@ -19,6 +19,8 @@ def read_models(path="modelos.txt") :
     """
     Read the car's parts and return the models with their own parts and number of parts.
 
+    Precondition: Models must be ordered at .txt, don't repit a model after another appeared.
+
     Atributes :
     -----------
         path
@@ -28,11 +30,17 @@ def read_models(path="modelos.txt") :
         dict : {model : (part, int number of parts)}
     """
     models = {}
-    with open(path) as f:
-        for l in f.readlines():
+    with open(path) as f :
+        for l in f.readlines() :
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
-            models[model_name] = (part_name, qty)
+            print(models[model_name])
+            if model_name in models.keys() :       
+                models[model_name] = models[model_name].add((part_name, qty))
+            else :
+                lista = LOP()
+                models[model_name] = lista.add((part_name, qty))
+            
             print(f"Por hacer: añadir al catálogo pieza \"{part_name}\" ({qty} unidades) al modelo \"{model_name}\"")
     return models
 			
