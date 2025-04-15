@@ -2,7 +2,7 @@ from linked_ordered_positional_list import LinkedOrderedPositionalList as LOP
 from array_ordered_positional_list import ArrayOrderedPositionalList as AOP
 
 def read_orders(path="pedidos.txt"):
-    with open(path) as f:
+    with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             customer, model_name = ls[0], ls[1]
@@ -22,7 +22,7 @@ def read_orders(path="pedidos.txt"):
 def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inventario 
     inventario = AOP()
 
-    with open(path) as f:
+    with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             part_name, qty = ls[0], int(ls[1])
@@ -49,7 +49,7 @@ def read_models(path="modelos.txt") :
         dict : {model : (part, int number of parts)}
     """
     catalogo = {}
-    with open(path) as f:
+    with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
