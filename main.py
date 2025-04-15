@@ -97,15 +97,29 @@ def read_models(path="modelos.txt") :
 
 if __name__ == "__main__":
 
+    ### 1 LEER Y MOSTRAR EL STOCK ###
     inventario = read_parts() #array de partes disponibles
-    catalogo = read_models() # diccionario de automóviles disponibles
-    read_orders()
-
     print("\n -----STOCK----")  #Imprimir el stock
     for elementos in inventario:
         print(*elementos)
     print()
     
+    ### 2 LECTURA DEL CATALOGO ###
+    catalogo = read_models() # diccionario de automóviles disponibles
+
+    ### 3 MOSTRAR EL CATALOGO ###
+    print("\n -----CATÁLOGO----")    #Imprimir el catálogo
+    for modelo, lista in catalogo.items():
+        print("Modelo : ", modelo)
+        frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
+        print(f"{frase} \n" )
+
+    ### 4 PROCESAR EL FICHERO DE PEDIDOS ###
+    read_orders() 
+    # queda eliminar los coches que no se puedan procesar (sin piezas),     las piezas q se hayan acabado (modtrar)   y   mostrar estado del stock
+
+    ### 5 MOSTRAR CATÁLOGO ACTUALIZADO CON CAMBIOS ###
+    # hasta que no se termine el paso 4 estará indicando lo mismo que en el 3
     print("\n -----CATÁLOGO----")    #Imprimir el catálogo
     for modelo, lista in catalogo.items():
         print("Modelo : ", modelo)
