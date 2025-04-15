@@ -1,7 +1,21 @@
 from linked_ordered_positional_list import LinkedOrderedPositionalList as LOP
 from array_ordered_positional_list import ArrayOrderedPositionalList as AOP
 
-def read_orders(path="pedidos.txt"):
+def read_orders(path="pedidos.txt") :
+    """
+    read the car's orders
+
+    Attributes :
+    ------------
+        path
+    the txt where the progrem reads the data
+
+    Return :
+    --------
+        None
+    """
+    print()
+    print()
     with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
@@ -15,11 +29,26 @@ def read_orders(path="pedidos.txt"):
                 for componentes in catalogo[model_name]:
                     print(*componentes)
                 print()
-                
+    print()
+    return None
+
            
             
             
-def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inventario 
+def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inventario
+    """
+    Read the whole part's inventary, name and number of parts.
+
+     Atributes :
+     -----------
+        path
+    path of the txt where the program read the data.
+
+    Return :
+    --------
+        inventario 
+    Array Ordered Positional List ; with the inventary
+    """
     inventario = AOP()
 
     with open(path, encoding = 'utf8') as f:
@@ -47,7 +76,8 @@ def read_models(path="modelos.txt") :
     File .txt where the program read the data.
     Return :
     --------
-        dict : {model : (part, int number of parts)}
+        catalogo
+    dict; {model : (part, int number of parts)}
     """
     catalogo = {}
     with open(path, encoding = 'utf8') as f:
