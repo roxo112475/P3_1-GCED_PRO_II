@@ -26,6 +26,7 @@ def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inv
         for l in f.readlines():
             ls = l.strip().split(",")
             part_name, qty = ls[0], int(ls[1])
+            print(f'Por hacer: Añadir al inventario la pieza {part_name} con {qty} unidades')
             piezas = [part_name, qty]
             inventario.add(piezas)
 
@@ -54,7 +55,8 @@ def read_models(path="modelos.txt") :
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
             piezas = (part_name, qty)
-            
+            print(f'Por hacer: Añadir al catálogo pieza {part_name} con {qty} unidades.')
+
             if model_name not in catalogo.keys(): #Si el modelo aun no se ha registrado crea una LOP sobre la que añadir tuplas en vez de reescribirlas
                 catalogo[model_name] = LOP()
                 
