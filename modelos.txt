@@ -1,9 +1,9 @@
-Sedán,MotorH,1
-Sedán,Frenos,4
-Sedán,Ruedas,4
-Sedán,Faros,2
-Sedán,Asientos,5
-Sedán,Escape,1
+Sedan,MotorH,1
+Sedan,Frenos,4
+Sedan,Ruedas,4
+Sedan,Faros,2
+Sedan,Asientos,5
+Sedan,Escape,1
 SUV,MotorC,1
 SUV,Frenos,4
 SUV,Ruedas,5
