@@ -75,15 +75,35 @@ def read_models(path="modelos.txt") :
     return catalogo
 
 
-def ensamblar(construccion: str): #Resta del inventario las partes necesarias para construir el coche (construccion)
-    if isinstance( construccion, str):
-        a  = catalogo[construccion]
+def ensamblar(construccion: str, inventario):
+    """Dado el nombre de un modelo, intenta ensamblarlo restando las piezas necesarias del inventario"""
+    if  isinstance(construccion, str):
+    
+        modelo = catalogo.get(construccion)
+    
+        pos = modelo.first()  # Obtener la primera posición de la lista LOP
 
-    for _ in range(len(catalogo[construccion])):
-        pieza, cantidad = (catalogo[construccion].get_element(a))
-        
-        a = catalogo[construccion].after(a) #Reiniciar el bucle para iterar sobre la LOP
-
+        while pos is not None:
+            pieza, cantidad = modelo.get_element(pos)
+            pos = modelo.after(pos)
+    
+            # Buscar la pieza en el inventario
+            inv_pos = inventario.first()
+            found = False
+            while inv_pos is not None:
+                pieza_inv = inventario.get_element(inv_pos)
+                if pieza_inv.nombre == pieza:
+                    found = True
+                    if pieza_inv.cantidad >= cantidad:
+                        pieza_inv.cantidad -= cantidad
+                        print(f"{cantidad} unidades de '{pieza}' descontadas del inventario.")
+                    else:
+                        print(f"No hay suficientes unidades de '{pieza}' para ensamblar {construccion}.")
+                    break
+                inv_pos = inventario.after(inv_pos)
+            
+            if not found:
+                print(f"Pieza '{pieza}' no encontrada en el inventario.")
 
 
 if __name__ == "__main__":
@@ -92,6 +112,7 @@ if __name__ == "__main__":
         inventario = read_parts() #array de partes disponibles
         catalogo = read_models() # diccionario de automóviles disponibles
         construccion = procesar_pedidos(lista_pedidos)
+        ensamblar(construccion, inventario)
 
         print("---STOCK--- \n ")  #Imprimir el stock
         for elementos in inventario:
@@ -103,3 +124,6 @@ if __name__ == "__main__":
             print("Modelo : ", modelo)
             frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
             print(f"{frase} \n" )
+
+
+#Necesito una clase de piezas para poder buscar en la lista 
