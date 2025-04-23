@@ -12,7 +12,7 @@ def read_orders(path="pedidos.txt"):
 
       
         
-def procesar_pedidos(lista_pedidos:list):
+def procesar_pedidos(lista_pedidos:list, catalogo):
     """
     Takes a list of the orders and processes them one by one  filtering the models which dont exist
     on the catalogue and telling the program which model assemble next
@@ -86,7 +86,7 @@ def read_models(path="modelos.txt") :
 def ensamblar(construccion: str, inventario, catalogo):
     """Dado el nombre de un modelo, intenta ensamblarlo restando las piezas necesarias del inventario"""
     if  construccion in catalogo.keys():
-    
+        piezas_faltantes = []
         modelo = catalogo.get(construccion) #El coche en cuestion
     
         pos = modelo.first()  # Obtener la primera posición de la lista LOP
@@ -94,32 +94,41 @@ def ensamblar(construccion: str, inventario, catalogo):
         while pos is not None:
             pieza, cantidad = modelo.get_element(pos)
             pos = modelo.after(pos)
-    
+
             # Buscar la pieza en el inventario de forma comparativa
             inv_pos = inventario.first()
-
             found = False
+
             while inv_pos is not None: #Parará después del ultimo (el after del ultimo sera None)
                 pieza_inv = inventario.get_element(inv_pos)
-                if pieza_inv[0] == pieza: #Nombre pieza inventario
+                if pieza_inv[0] == pieza:  #Pieza_inv[0]  = Nombre pieza inventario
                     found = True
                     if pieza_inv[1] >= cantidad:
                         pieza_inv[1] -= cantidad
                         
                     else:
-                        print(f"No hay suficientes unidades de '{pieza}' para ensamblar el modelo {construccion}.")
-                        catalogo.pop(construccion)
-                        print(f"El modelo {construccion} ha sido eliminado del catálogo")                        
-                        return #Acaba la funcion tras detectar que falta al menos una pieza; elimina el coche del catalogo
-                    
+                        piezas_faltantes.append([pieza_inv[0], abs((cantidad - pieza_inv[1]))])
+                    break
+
                 inv_pos = inventario.after(inv_pos)
             
             if not found:
-                catalogo.pop(construccion)
-                print(f"Pieza '{pieza}' no encontrada en el inventario.")
-    
+                piezas_faltantes.append([pieza, cantidad])
+
+        if len(piezas_faltantes) > 0:
+            frase = "\n ".join(f"{pieza[0]}: {pieza[1]}" for pieza in piezas_faltantes)
+            print(f"\nPedido NO atendido: Faltan:")
+            print(frase,  "\n")
             
 
+            catalogo.pop(construccion)
+            print(f"El modelo {construccion} ha sido eliminado del catálogo")                        
+            return #Acaba la funcion tras eliminar el coche del catalogo
+            
+
+        else:
+            print(f"Modelo {construccion} creado con éxito")
+            return
 
 if __name__ == "__main__":
     lista_pedidos = read_orders() #Lista de los pedidos, sirve de condicion de stop de la simulacion
@@ -128,7 +137,7 @@ if __name__ == "__main__":
     
     while len(lista_pedidos) > 0: 
 
-        construccion = procesar_pedidos(lista_pedidos) #retorna el modelo a ensamblar
+        construccion = procesar_pedidos(lista_pedidos,catalogo) #retorna el modelo a ensamblar
         ensamblar(construccion, inventario, catalogo) # intenta ensamblar e indica si hay un error 
 
         print("---STOCK--- \n ")  #Imprimir el stock
@@ -141,6 +150,3 @@ if __name__ == "__main__":
             print("Modelo : ", modelo)
             frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
             print(f"{frase} \n" )
-
-
- 
