@@ -3,7 +3,7 @@ from array_ordered_positional_list import ArrayOrderedPositionalList as AOP
 
 def read_orders(path="pedidos.txt"):
     lista_pedidos = []
-    with open(path) as f:
+    with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             customer, model_name = ls[0], ls[1]
@@ -13,6 +13,14 @@ def read_orders(path="pedidos.txt"):
       
         
 def procesar_pedidos(lista_pedidos:list):
+    """
+    Takes a list of the orders and processes them one by one  filtering the models which dont exist
+    on the catalogue and telling the program which model assemble next
+
+    Returns:
+    None if the model does not exist
+    model_name: The name of the next model the program will try to assemble
+    """
     while len(lista_pedidos) != 0: 
         pedido = lista_pedidos.pop(0)
         model_name = pedido[0]; customer = pedido[1]
@@ -37,7 +45,7 @@ def procesar_pedidos(lista_pedidos:list):
 def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inventario 
     inventario = AOP()
 
-    with open(path) as f:
+    with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             part_name, qty = ls[0], int(ls[1])
@@ -62,7 +70,7 @@ def read_models(path="modelos.txt") :
         dict : {model : (part, int number of parts)}
     """
     catalogo = {}
-    with open(path) as f:
+    with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
@@ -114,14 +122,14 @@ def ensamblar(construccion: str, inventario, catalogo):
 
 
 if __name__ == "__main__":
-    lista_pedidos = read_orders()
+    lista_pedidos = read_orders() #Lista de los pedidos, sirve de condicion de stop de la simulacion
     inventario = read_parts() #array de partes disponibles
     catalogo = read_models() # diccionario de automóviles disponibles
     
     while len(lista_pedidos) > 0: 
 
-        construccion = procesar_pedidos(lista_pedidos)
-        ensamblar(construccion, inventario, catalogo)
+        construccion = procesar_pedidos(lista_pedidos) #retorna el modelo a ensamblar
+        ensamblar(construccion, inventario, catalogo) # intenta ensamblar e indica si hay un error 
 
         print("---STOCK--- \n ")  #Imprimir el stock
         for elementos in inventario:
