@@ -91,27 +91,27 @@ def procesar_pedidos(lista_pedidos:list, catalogo):
         print("-------------")
         print("Nuevo pedido; Modelo: ", model_name , " | Cliente: ",customer)
         if model_name not in catalogo.keys():
-            print("Pedido NO atendido. Modelo: ", model_name, "fuera del catalogo. \n")
-            print("-------------")
+            print("Pedido NO atendido. Modelo: ", model_name, "fuera del catalogo.")
+            print("------------- \n")
             return
 
         else:
             print("-------------")
             print(f"Modelo: {model_name}")
             for componentes in catalogo[model_name]:
-                print(*componentes)
-            print("-------------")
-            print()
+                print(*componentes, sep= " - ")
+            print("-------------\n")
+            
         return model_name
 
     
-def ensamblar(construccion: str, inventario, catalogo):
-    """Dado el nombre de un modelo, intenta ensamblarlo restando las piezas necesarias del inventario"""
-    if  construccion in catalogo.keys():
+def comprobacion(en_construccion: str, inventario, catalogo):
+    """Dado el nombre de un modelo, comprueba si se puede ensamblar o indica cuantas piezas faltan para ello"""
+    if  en_construccion in catalogo.keys():
         piezas_faltantes = []
         resta_piezas = []
 
-        modelo = catalogo.get(construccion) #El coche en cuestion
+        modelo = catalogo.get(en_construccion) #El coche en cuestion
     
         pos = modelo.first()  # Obtener la primera posición de la lista LOP (las piezas necesarias para el coche )
 
@@ -144,8 +144,8 @@ def ensamblar(construccion: str, inventario, catalogo):
             print(frase,  "\n")
             
 
-            catalogo.pop(construccion)
-            print(f"El modelo {construccion} ha sido eliminado del catálogo")                        
+            catalogo.pop(en_construccion)
+            print(f"El modelo {en_construccion} ha sido eliminado del catálogo")                        
             return None #Acaba la funcion tras eliminar el coche del catalogo
             
 
@@ -153,26 +153,40 @@ def ensamblar(construccion: str, inventario, catalogo):
             return resta_piezas
         
 
-def eliminar_stock(inventario):
-    resta_piezas = ensamblar(construccion, inventario, catalogo)
-    if resta_piezas != None:
-        for piezas in resta_piezas:
-            nombre, cantidad = piezas
+def ensamblar(inventario, en_construccion):
+    resta_piezas = comprobacion(en_construccion, inventario, catalogo)
+    piezas_eliminadas = []  # Para acumular los nombres de las piezas eliminadas
+
+    if resta_piezas is not None:  # Caso de que el coche se pueda ensamblar
+        for nombre, cantidad in resta_piezas:
             inv_pos = inventario.first()
 
-            while inv_pos is not None: #Parará después del ultimo (el after del ultimo sera None)
+            while inv_pos is not None:
                 pieza_inv = inventario.get_element(inv_pos)
-                if pieza_inv[0] == nombre:  
+                
+                if pieza_inv[0] == nombre:
                     if pieza_inv[1] >= cantidad:
-                      pieza_inv[1] -= cantidad  
-                      if pieza_inv[1] == 0:
-                          inventario.delete(inv_pos)
-
-                    else:
-                        print("La pieza no existe")
-                    break
+                        pieza_inv[1] -= cantidad
+                    
+                    if pieza_inv[1] == 0:
+                        inventario.delete(inv_pos)  # Eliminar del stock la pieza
+                        piezas_eliminadas.append(nombre)
+                    break  
 
                 inv_pos = inventario.after(inv_pos)
+
+        # Mostrar piezas eliminadas si hay
+        print(f"* Pedido {en_construccion} atendido \n")
+        if len(piezas_eliminadas) > 0:
+            print("Piezas eliminadas:")
+            for pieza in piezas_eliminadas:
+                print(f"  - Pieza {pieza}")
+
+            # Mostrar eliminación del modelo 
+            print(f"Eliminado el modelo '{en_construccion}'  dependiente")
+            if en_construccion in catalogo:
+                catalogo.pop(en_construccion)
+
 
 
 
@@ -183,22 +197,19 @@ if __name__ == "__main__":
     
     while len(lista_pedidos) > 0: 
 
-        construccion = procesar_pedidos(lista_pedidos,catalogo) #retorna el modelo a ensamblar
-        eliminar_stock(inventario) # intenta ensamblar e indica si hay un error 
+        en_construccion = procesar_pedidos(lista_pedidos,catalogo) #retorna el modelo a ensamblar
+        ensamblar(inventario, en_construccion) # intenta ensamblar e indica si hay un error 
 
 
 
-        print("---STOCK--- \n ")  #Imprimir el stock
+        print("---STOCK---")  #Imprimir el stock
         for elementos in inventario:
             print(*elementos)
         print()
         
-        print("-----CATÁLOGO---- \n")    #Imprimir el catálogo
+        print("---CATÁLOGO----- \n")    #Imprimir el catálogo
         for modelo, lista in catalogo.items():
             print("Modelo : ", modelo)
             frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
             print(f"{frase} \n" )
 
-
-
-#HAY QUE EVITAR QUE RESTE OTRAS PIEZAS CUANDO NO SE PUEDE CREAR EL COCHE
