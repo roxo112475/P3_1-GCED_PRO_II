@@ -25,13 +25,18 @@ def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inv
         inventario 
     Array Ordered Positional List ; with the inventary
     """
-    inventario = AOP()
+    #Para asegurar que el programa funciona solo con AOPs o solo con LOPs
+    try:
+        inventario = AOP()
+    except NameError:
+        inventario = LOP()
+
 
     with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
             ls = l.strip().split(",")
             part_name, qty = ls[0], int(ls[1])
-            print(f'Por hacer: Añadir al inventario la pieza {part_name} con {qty} unidades')
+            #print(f'Por hacer: Añadir al inventario la pieza {part_name} con {qty} unidades')
             piezas = [part_name, qty]
             inventario.add(piezas)
 
@@ -58,10 +63,14 @@ def read_models(path="modelos.txt") :
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
             piezas = (part_name, qty)
-            print(f'Por hacer: Añadir al catálogo pieza {part_name} con {qty} unidades.')
+           # print(f'Por hacer: Añadir al catálogo pieza {part_name} con {qty} unidades.')
 
             if model_name not in catalogo.keys(): #Si el modelo aun no se ha registrado crea una LOP sobre la que añadir tuplas en vez de reescribirlas
-                catalogo[model_name] = LOP()
+                try:
+                    catalogo[model_name] = LOP()
+                except NameError:
+                    catalogo[model_name] = AOP()
+                
                 
             catalogo[model_name].add(piezas)
     return catalogo
@@ -100,9 +109,11 @@ def ensamblar(construccion: str, inventario, catalogo):
     """Dado el nombre de un modelo, intenta ensamblarlo restando las piezas necesarias del inventario"""
     if  construccion in catalogo.keys():
         piezas_faltantes = []
+        resta_piezas = []
+
         modelo = catalogo.get(construccion) #El coche en cuestion
     
-        pos = modelo.first()  # Obtener la primera posición de la lista LOP
+        pos = modelo.first()  # Obtener la primera posición de la lista LOP (las piezas necesarias para el coche )
 
         while pos is not None:
             pieza, cantidad = modelo.get_element(pos)
@@ -117,8 +128,7 @@ def ensamblar(construccion: str, inventario, catalogo):
                 if pieza_inv[0] == pieza:  #Pieza_inv[0]  = Nombre pieza inventario
                     found = True
                     if pieza_inv[1] >= cantidad:
-                        pieza_inv[1] -= cantidad
-                        
+                        resta_piezas.append([pieza_inv[0], cantidad])                     
                     else:
                         piezas_faltantes.append([pieza_inv[0], abs((cantidad - pieza_inv[1]))])
                     break
@@ -136,12 +146,35 @@ def ensamblar(construccion: str, inventario, catalogo):
 
             catalogo.pop(construccion)
             print(f"El modelo {construccion} ha sido eliminado del catálogo")                        
-            return #Acaba la funcion tras eliminar el coche del catalogo
+            return None #Acaba la funcion tras eliminar el coche del catalogo
             
 
         else:
-            print(f"Modelo {construccion} creado con éxito")
-            return
+            return resta_piezas
+        
+
+def eliminar_stock(inventario):
+    resta_piezas = ensamblar(construccion, inventario, catalogo)
+    if resta_piezas != None:
+        for piezas in resta_piezas:
+            nombre, cantidad = piezas
+            inv_pos = inventario.first()
+
+            while inv_pos is not None: #Parará después del ultimo (el after del ultimo sera None)
+                pieza_inv = inventario.get_element(inv_pos)
+                if pieza_inv[0] == nombre:  
+                    if pieza_inv[1] >= cantidad:
+                      pieza_inv[1] -= cantidad  
+                      if pieza_inv[1] == 0:
+                          inventario.delete(inv_pos)
+
+                    else:
+                        print("La pieza no existe")
+                    break
+
+                inv_pos = inventario.after(inv_pos)
+
+
 
 if __name__ == "__main__":
     lista_pedidos = read_orders() #Lista de los pedidos, sirve de condicion de stop de la simulacion
@@ -151,7 +184,9 @@ if __name__ == "__main__":
     while len(lista_pedidos) > 0: 
 
         construccion = procesar_pedidos(lista_pedidos,catalogo) #retorna el modelo a ensamblar
-        ensamblar(construccion, inventario, catalogo) # intenta ensamblar e indica si hay un error 
+        eliminar_stock(inventario) # intenta ensamblar e indica si hay un error 
+
+
 
         print("---STOCK--- \n ")  #Imprimir el stock
         for elementos in inventario:
@@ -163,3 +198,7 @@ if __name__ == "__main__":
             print("Modelo : ", modelo)
             frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
             print(f"{frase} \n" )
+
+
+
+#HAY QUE EVITAR QUE RESTE OTRAS PIEZAS CUANDO NO SE PUEDE CREAR EL COCHE
