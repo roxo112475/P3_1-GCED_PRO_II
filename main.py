@@ -1,5 +1,5 @@
-from linked_ordered_positional_list import LinkedOrderedPositionalList as ListaOrdenada
-from array_ordered_positional_list import ArrayOrderedPositionalList as ListaOrdenada
+from linked_ordered_positional_list import LinkedOrderedPositionalList as AOP
+from array_ordered_positional_list import ArrayOrderedPositionalList as LOP
 
 def read_orders(stock: AOP, catalogo: dict, path = "pedidos.txt") :
     """
@@ -30,9 +30,9 @@ def read_orders(stock: AOP, catalogo: dict, path = "pedidos.txt") :
                 if aval :
                     print(f'Pedido {model_name} atendido.')
                     update_stock(model_name, stock, catalogo) # actualiza el stock y el catalogo (catalogo en funcion auxiliar)
-                    #show_items(catalogo)
+                    show_items(catalogo)
                     catalogo = dependent_car(stock, catalogo) # revisa si por falta de stock hay algun coche del catalogo que no pueda fabricarse y lo elimina
-                    #show_items(catalogo)
+                    show_items(catalogo)
                 else :
                     none_avaliable = avaliability(stock, catalogo, model_name)
                     print(f'Pedido {model_name} NO atendido. Faltan:', end = '\t')
