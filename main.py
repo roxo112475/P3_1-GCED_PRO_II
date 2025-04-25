@@ -1,4 +1,6 @@
 #Manuel Omil Barreiro, Nicolas García Iglesias
+#manuel.omil.barreiro@udc.es , nicola.garcia.iglesias@udc.es
+
 
 from linked_ordered_positional_list import LinkedOrderedPositionalList as LOP
 from array_ordered_positional_list import ArrayOrderedPositionalList as AOP
@@ -238,3 +240,4 @@ if __name__ == "__main__":
             frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
             print(f"{frase} \n" )
 
+print("\n**FIN DE LOS PEDIDOS**\n")
