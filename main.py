@@ -52,7 +52,7 @@ def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inv
         for l in f.readlines():
             ls = l.strip().split(",")
             part_name, qty = ls[0], int(ls[1])
-            #print(f'Por hacer: Añadir al inventario la pieza {part_name} con {qty} unidades')
+            print(f'Por hacer: Añadir al inventario la pieza {part_name} con {qty} unidades')
             piezas = [part_name, qty]
             inventario.add(piezas)
 
@@ -79,7 +79,7 @@ def read_models(path="modelos.txt") :
             ls = l.strip().split(",")
             model_name, part_name, qty = ls[0], ls[1], int(ls[2])
             piezas = (part_name, qty)
-           # print(f'Por hacer: Añadir al catálogo pieza {part_name} con {qty} unidades.')
+            print(f'Por hacer: Añadir al catálogo pieza {part_name} con {qty} unidades.')
 
             if model_name not in catalogo.keys(): #Si el modelo aun no se ha registrado crea una LOP sobre la que añadir tuplas en vez de reescribirlas
                 try:
@@ -218,9 +218,26 @@ def modelos_dependientes(pieza, catalogo):
 
 
 if __name__ == "__main__":
-    lista_pedidos = read_orders() #Lista de los pedidos, sirve de condicion de stop de la simulacion
+    ## PASO 1. Leer inventario y mostrarlo ##
     inventario = read_parts() #array de partes disponibles
+
+    print("---STOCK---")  #Imprimir el stock
+    for elementos in inventario:
+        print(*elementos)
+    print()
+
+    ## PASO 2. Lectura del catálogo ##
     catalogo = read_models() # diccionario de automóviles disponibles
+    
+    ## PASO 3. Mostramos el catálogo ##
+    print("---CATÁLOGO----- \n")    #Imprimir el catálogo
+    for modelo, lista in catalogo.items():
+        print("Modelo : ", modelo)
+        frase = "| ".join(f"{pieza[0]}: {pieza[1]}" for pieza in lista)
+        print(f"{frase} \n" )
+    
+    ## PASO 4. Procesamos el fichero con los pedidos de los clientes ##
+    lista_pedidos = read_orders() #Lista de los pedidos, sirve de condicion de stop de la simulacion
     
     while len(lista_pedidos) > 0: 
 
