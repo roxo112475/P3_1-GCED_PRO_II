@@ -4,6 +4,18 @@ from linked_ordered_positional_list import LinkedOrderedPositionalList as LOP
 from array_ordered_positional_list import ArrayOrderedPositionalList as AOP
 
 def read_orders(path="pedidos.txt"):
+    """
+    Read all the orders with the client´s name and its car model.
+    Atributes :
+     -----------
+    path
+    path of the txt where the program read the data.
+
+    Return :
+    --------
+    lista_pedidos = a list containing all of the orders so they can be processed individually
+    """
+
     lista_pedidos = []
     with open(path, encoding = 'utf8') as f:
         for l in f.readlines():
@@ -15,7 +27,7 @@ def read_orders(path="pedidos.txt"):
             
 def read_parts(path="piezas.txt"):  #Abrir y leer el documento piezas, crear inventario
     """
-    Read the whole part's inventary, name and number of parts.
+    Read the whole part's inventory, name and number of parts.
 
      Atributes :
      -----------
@@ -155,10 +167,12 @@ def comprobacion(en_construccion: str, inventario, catalogo):
 
 
 
-def ensamblar(inventario, en_construccion):
+def ensamblar(inventario, en_construccion, catalogo):
     resta_piezas = comprobacion(en_construccion, inventario, catalogo)
+    if resta_piezas is None:
+        return  # Exit the function if comprobacion returned None
 
-    if resta_piezas is not None:  # Caso de que el coche se pueda ensamblar
+    else:  # Caso de que el coche se pueda ensamblar
         for nombre, cantidad in resta_piezas:
             inv_pos = inventario.first()
 
@@ -209,7 +223,7 @@ if __name__ == "__main__":
     while len(lista_pedidos) > 0: 
 
         en_construccion = procesar_pedidos(lista_pedidos,catalogo) #retorna el modelo a ensamblar
-        ensamblar(inventario, en_construccion) # intenta ensamblar e indica si hay un error 
+        ensamblar(inventario, en_construccion, catalogo) # intenta ensamblar e indica si hay un error 
 
 
 
