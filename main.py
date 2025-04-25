@@ -1,3 +1,5 @@
+#Manuel Omil Barreiro, Nicolas García Iglesias
+
 from linked_ordered_positional_list import LinkedOrderedPositionalList as LOP
 from array_ordered_positional_list import ArrayOrderedPositionalList as AOP
 
@@ -148,7 +150,6 @@ def comprobacion(en_construccion: str, inventario, catalogo):
             print(f"El modelo {en_construccion} ha sido eliminado del catálogo")                        
             return None #Acaba la funcion tras eliminar el coche del catalogo
             
-
         else:
             return resta_piezas
         
@@ -184,8 +185,7 @@ def ensamblar(inventario, en_construccion):
 
             # Mostrar eliminación del modelo 
             print(f"Eliminado el modelo '{en_construccion}'  dependiente")
-            if en_construccion in catalogo:
-                catalogo.pop(en_construccion)
+            catalogo.pop(en_construccion)
 
 
 
