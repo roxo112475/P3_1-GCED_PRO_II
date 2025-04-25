@@ -152,11 +152,11 @@ def comprobacion(en_construccion: str, inventario, catalogo):
             
         else:
             return resta_piezas
-        
+
+
 
 def ensamblar(inventario, en_construccion):
     resta_piezas = comprobacion(en_construccion, inventario, catalogo)
-    piezas_eliminadas = []  # Para acumular los nombres de las piezas eliminadas
 
     if resta_piezas is not None:  # Caso de que el coche se pueda ensamblar
         for nombre, cantidad in resta_piezas:
@@ -170,22 +170,33 @@ def ensamblar(inventario, en_construccion):
                         pieza_inv[1] -= cantidad
                     
                     if pieza_inv[1] == 0:
+                        print(f"* Eliminada: Pieza {nombre}")
                         inventario.delete(inv_pos)  # Eliminar del stock la pieza
-                        piezas_eliminadas.append(nombre)
+                        modelos_dependientes(nombre ,catalogo)
                     break  
 
                 inv_pos = inventario.after(inv_pos)
+        print(f"Pedido {en_construccion} atendido.\n")
 
-        # Mostrar piezas eliminadas si hay
-        print(f"* Pedido {en_construccion} atendido \n")
-        if len(piezas_eliminadas) > 0:
-            print("Piezas eliminadas:")
-            for pieza in piezas_eliminadas:
-                print(f"  - Pieza {pieza}")
 
-            # Mostrar eliminación del modelo 
-            print(f"Eliminado el modelo '{en_construccion}'  dependiente")
-            catalogo.pop(en_construccion)
+def modelos_dependientes(pieza, catalogo):
+    "Checks for every car model that uses the piece that the stock ran out of"
+
+    modelos_a_eliminar = []
+
+    for modelo, lista_piezas in catalogo.items():
+        pos = lista_piezas.first()
+        while pos is not None:
+            pieza_modelo, _ = lista_piezas.get_element(pos)
+            if pieza_modelo == pieza: #Si la pieza en cuestion esta en el modelo, se guarda en la lista de modelos a eliminar
+                modelos_a_eliminar.append(modelo)
+                break
+            pos = lista_piezas.after(pos) #Si no encuentra nada, saltar al siguiente 
+
+    for modelo in modelos_a_eliminar:
+        catalogo.pop(modelo)
+        print(f"- Eliminado: Modelo {modelo} dependiente")
+    print()
 
 
 
